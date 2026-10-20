@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmailShare - Client Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}?v=7">
+    <style>
+        .form-input { background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); color: #f8fafc; padding: 14px 16px; border-radius: 12px; outline: none; transition: all 0.3s ease; font-family: 'Outfit'; font-size: 15px; width: 100%; }
+        .form-input:focus { border-color: #818cf8; background: rgba(15, 23, 42, 0.8); }
+    </style>
+</head>
+<body class="bg-gradient">
+
+    <div class="glass-container center-panel">
+        <header class="app-header">
+            <h1 style="color: #f8fafc; font-size: 28px; font-weight: 600;">Client Portal Log In</h1>
+            <p class="subtitle" style="margin-top: 8px;">Access your admin dashboard securely.</p>
+        </header>
+
+        <main>
+            <form method="POST" class="pin-form">
+                {% csrf_token %}
+                
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" name="username" class="form-input" required autofocus>
+                </div>
+
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" name="password" class="form-input" required>
+                </div>
+                
+                <div class="input-group" style="margin-top: 16px; margin-bottom: -10px;">
+                    <label style="display: flex; gap: 8px; align-items: start; font-size: 11px; font-weight: 400; text-transform: none; color: #cbd5e1; cursor: pointer;">
+                        <input type="checkbox" required style="margin-top: 2px;">
+                        <span>I accept the Legal Indemnification terms below and assume 100% liability for any misuse.</span>
+                    </label>
+                </div>
+                
+                {% if form.errors %}
+                    <div class="alert error-alert animate-shake">
+                        <span class="alert-icon">⚠</span>
+                        Invalid username or password.
+                    </div>
+                {% endif %}
+                
+                <button type="submit" class="btn-primary" style="margin-top: 24px;">
+                    Log In
+                </button>
+            </form>
+        </main>
+    </div>
+    
+    <div style="max-width: 500px; margin: 32px auto; padding: 20px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; backdrop-filter: blur(8px);">
+        <h4 style="color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 700; text-align: center;">Legal Indemnification Policy</h4>
+        <p style="color: #64748b; font-size: 11px; line-height: 1.6; text-align: center; margin: 0;">
+            This software is provided "as is" without warranty. The original developer holds absolutely zero legal, financial, or computational liability for how clients utilize, distribute, or configure this tool. By checking the agreement box and authenticating into this system, you legally indemnify the developer and assume full 100% responsibility to comply with Google API Terms of Service, GDPR, and all applicable global laws governing data sharing and privacy.
+        </p>
+    </div>
+
+</body>
+</html>

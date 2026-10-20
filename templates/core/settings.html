@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmailShare - Account Settings</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}?v=6">
+    <style>
+        .setting-box { background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); padding: 20px 24px; border-radius: 14px; margin-bottom: 16px; }
+        .form-input { background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); color: #f8fafc; padding: 10px 14px; border-radius: 10px; outline: none; transition: all 0.3s ease; font-family: 'Outfit'; font-size: 14px; width: 100%; margin-bottom: 8px; margin-top: 4px; }
+        .form-input:focus { border-color: #818cf8; background: rgba(15, 23, 42, 0.8); }
+        .helptext { display: none !important; } /* Nuke the massive default Django password text */
+        ul.errorlist { color: #fca5a5; font-size: 13px; list-style: none; padding: 0; margin-bottom: 12px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 8px 12px; border-radius: 8px;}
+        .django-form-wrapper p { margin-bottom: 0; }
+        .django-form-wrapper label { font-size: 12px; color: #cbd5e1; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; display: block; }
+    </style>
+</head>
+<body class="bg-gradient" style="overflow: hidden;">
+
+    <!-- Pop Up Card Toast Notifications -->
+    {% if messages %}
+    <div id="toast-container" style="position: fixed; top: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 12px;">
+        {% for message in messages %}
+        <div class="toast-card" style="background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(10px); border-left: 4px solid {% if message.tags == 'error' %}#ef4444{% else %}#10b981{% endif %}; border-radius: 8px; padding: 16px 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); color: #f8fafc; font-family: 'Outfit'; font-size: 14px; display: flex; align-items: center; gap: 12px; animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;">
+            <span>{% if message.tags == 'error' %}⚠{% else %}✓{% endif %}</span>
+            <span>{{ message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    <style>
+        @keyframes slideInRight {
+            0% { transform: translateX(100%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeOutRight {
+            0% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(100%); opacity: 0; }
+        }
+    </style>
+    <script>
+        setTimeout(() => {
+            const toasts = document.querySelectorAll('.toast-card');
+            toasts.forEach(toast => {
+                toast.style.animation = 'fadeOutRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards';
+                setTimeout(() => toast.remove(), 400);
+            });
+        }, 4000);
+    </script>
+    {% endif %}
+
+    <div class="glass-container center-panel" style="max-width: 500px; width: 100%; margin: auto; padding: 32px;">
+        <div class="dashboard-header" style="border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 24px; padding-bottom: 16px;">
+            <div class="inbox-meta" style="display: flex; gap: 16px; align-items: center; width: 100%; justify-content: space-between;">
+                <div>
+                    <h2 style="font-size: 24px; font-weight: 700; background: linear-gradient(to right, #e0e7ff, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Account Settings</h2>
+                </div>
+                <a href="{% url 'dashboard' %}" class="btn-sm" style="text-decoration: none; padding: 8px 14px; font-size: 13px; white-space: nowrap;">← Back</a>
+            </div>
+        </div>
+
+        <main>
+            <!-- Username Form -->
+            <form method="POST" class="setting-box">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_username">
+                
+                <h3 style="color: #818cf8; font-size: 18px; font-weight: 600; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    Profile Settings
+                </h3>
+
+                <label style="font-size: 13px; color: #cbd5e1; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Current Username</label>
+                <input type="text" name="new_username" class="form-input" value="{{ request.user.username }}" required>
+                
+                <button type="submit" class="btn-sm" style="width: 100%; padding: 14px; font-weight: 600; font-size: 14px; background: rgba(99, 102, 241, 0.15); border-color: rgba(99, 102, 241, 0.4); color: #e0e7ff; margin-top: 8px; cursor: pointer;">
+                    Modify Username
+                </button>
+            </form>
+
+            <!-- Password Form -->
+            <form method="POST" class="setting-box django-form-wrapper">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="update_password">
+                
+                <h3 style="color: #818cf8; font-size: 18px; font-weight: 600; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                    Security Settings
+                </h3>
+                
+                {{ form.as_p }}
+                
+                <button type="submit" class="btn-primary" style="margin-top: 16px; width: 100%;">
+                    Update Password
+                </button>
+            </form>
+        </main>
+    </div>
+
+</body>
+<script>
+    document.querySelectorAll('input').forEach(e => {
+        if(e.type !== 'hidden' && e.type !== 'submit') e.classList.add('form-input');
+    });
+</script>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmailShare - Add New Inbox</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}?v=7">
+    <style>
+        .form-input { background: rgba(15, 23, 42, 0.5); border: 1px solid rgba(255, 255, 255, 0.1); color: #f8fafc; padding: 14px 16px; border-radius: 12px; outline: none; transition: all 0.3s ease; font-family: 'Outfit'; font-size: 15px; width: 100%; }
+        .form-input:focus { border-color: #818cf8; background: rgba(15, 23, 42, 0.8); box-shadow: 0 0 0 4px rgba(129, 140, 248, 0.15); }
+        .form-input::placeholder { color: rgba(148, 163, 184, 0.5); }
+    </style>
+</head>
+<body class="bg-gradient">
+
+    <div class="glass-container center-panel">
+        <header class="app-header">
+            <h1 style="color: #f8fafc; font-size: 28px; font-weight: 600;">Add New Inbox</h1>
+            <p class="subtitle" style="margin-top: 8px;">Enter the Client's Gmail address and their 16-character Google App Password to generate a secure PIN.</p>
+        </header>
+
+        <main>
+            <form method="POST" class="pin-form">
+                {% csrf_token %}
+                
+                <div class="input-group">
+                    <label>Gmail Address</label>
+                    <input type="email" name="email_address" class="form-input" placeholder="Enter Client Gmail address" required autofocus>
+                </div>
+
+                <div class="input-group">
+                    <label>App Password</label>
+                    <input type="text" name="app_password" class="form-input" placeholder="Enter 16-character App Password" required autocomplete="off">
+                </div>
+
+                {% if form.errors %}
+                    <div class="alert error-alert animate-shake">
+                        <span class="alert-icon">⚠</span>
+                        Please check the fields above and try again.
+                    </div>
+                {% endif %}
+                
+                <button type="submit" class="btn-primary" style="margin-top: 8px;">
+                    Generate Secure PIN
+                </button>
+            </form>
+        </main>
+    </div>
+
+    <div style="max-width: 520px; margin: 32px auto; padding: 20px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; backdrop-filter: blur(8px);">
+        <h4 style="color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 700; text-align: center;">How to Get an App Password</h4>
+        <p style="color: #64748b; font-size: 11px; line-height: 1.6; text-align: center; margin: 0;">
+            Go to Google Account → Security → 2-Step Verification → App Passwords. Create a new one with any name (e.g. "Email Share") and copy the 16-letter code here. The client must have 2-Step Verification enabled first.
+        </p>
+    </div>
+
+</body>
+</html>

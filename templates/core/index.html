@@ -1,0 +1,125 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmailShare - Live Inbox Access</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'core/css/styles.css' %}?v=7">
+</head>
+<body class="bg-gradient">
+
+    <!-- Loading Overlay -->
+    <div id="loader" class="loader-overlay hidden">
+        <div class="loader-spinner"></div>
+        <p>Connecting to IMAP Server & Fetching Live Emails...</p>
+    </div>
+
+    <!-- The user hasn't successfully entered a PIN yet -->
+    {% if not inbox %}
+        <div class="glass-container center-panel">
+            <header class="app-header">
+                <div class="logo">
+                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                    <h1>Shared Inbox</h1>
+                </div>
+                <p class="subtitle">Secure, PIN-protected live inbox viewing.</p>
+            </header>
+
+            <main>
+                <form method="POST" action="{% url 'search_email' %}" class="pin-form" onsubmit="document.getElementById('loader').classList.remove('hidden')">
+                    {% csrf_token %}
+                    
+                    <div class="input-group">
+                        <label for="{{ form.pin.id_for_label }}">Enter 6-Digit Access PIN</label>
+                        {{ form.pin }}
+                        
+                        <label for="{{ form.target_email.id_for_label }}" style="margin-top: 16px;">Target Receiving Email Alias</label>
+                        {{ form.target_email }}
+                    </div>
+                    
+                    <div class="input-group" style="margin-top: 12px;">
+                        <label style="display: flex; gap: 8px; align-items: start; font-size: 11px; font-weight: 400; text-transform: none; color: #cbd5e1; cursor: pointer;">
+                            <input type="checkbox" required style="margin-top: 2px;">
+                            <span>I agree to the End-User Legal Agreement below.</span>
+                        </label>
+                    </div>
+                    
+                    {% if error %}
+                        <div class="alert error-alert animate-shake">
+                            <span class="alert-icon">⚠</span>
+                            {{ error }}
+                        </div>
+                    {% endif %}
+                    
+                    <button type="submit" class="btn-primary wave-effect" style="margin-top: 20px;">
+                        Unlock Live Inbox
+                    </button>
+                </form>
+            </main>
+        </div>
+    {% else %}
+    <!-- Display the Live Inbox -->
+        <div class="inbox-dashboard glass-container reveal-animate">
+            <div class="dashboard-header">
+                <div class="inbox-meta">
+                    <h2>Live Inbox Feed</h2>
+                    <p>Connected Account: <strong>{{ inbox.masked_email }}</strong></p>
+                </div>
+                <div class="inbox-stats">
+                    <span class="stat-badge">Expiry: {{ inbox.expiry|date:"M d, Y" }}</span>
+                    <a href="{% url 'search_email' %}" class="btn-sm">Exit</a>
+                </div>
+            </div>
+
+            <div class="email-list">
+                {% if emails %}
+                    {% for email in emails %}
+                        <div class="email-card">
+                            <div class="email-card-header" onclick="this.parentElement.classList.toggle('expanded')">
+                                <div class="sender-avatar">{{ email.sender|slice:":1"|upper }}</div>
+                                <div class="sender-info">
+                                    <h4>{{ email.sender }}</h4>
+                                    <h5 class="subject-line">{{ email.subject|default:"(No Subject)" }}</h5>
+                                </div>
+                                <div class="email-date">
+                                    {{ email.date|slice:":16" }}...
+                                </div>
+                                <div class="expand-icon">▼</div>
+                            </div>
+                            <div class="email-card-body">
+                                <div class="email-content">
+                                    {{ email.body|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                            <polyline points="22,6 12,13 2,6"></polyline>
+                        </svg>
+                        <p>No new messages found or unable to fetch from server.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- Footer Disclaimer -->
+    <div style="max-width: 600px; margin: 32px auto; padding: 20px; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px;">
+        <h4 style="color: rgba(255,255,255,0.5); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: 700; text-align: center;">End-User Agreement</h4>
+        <p style="color: rgba(255,255,255,0.4); font-size: 11px; line-height: 1.5; text-align: center; margin: 0;">
+            This access portal is independently operated by the credential provider. The underlying software developers assume absolutely no liability for the content fetched, user authorization validation, or violations of privacy resulting from PIN sharing. Unauthorized access or misuse is strictly the liability of the user.
+        </p>
+    </div>
+
+</body>
+</html>
